@@ -1,6 +1,8 @@
 #include "main.h"
 
-char apple[5] = {'A', 'P', 'P', 'L', 'E'};
+const unsigned char icon[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3f, 0xf8, 0x40, 0x04, 0x5b, 0x66, 0x5b, 0x66,
+    0x5b, 0x66, 0x40, 0x04, 0x3f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 int main()
 {
     SOCKET sock = INVALID_SOCKET;
@@ -15,31 +17,8 @@ int main()
         return 2;
     }
     printf("Connected to server!\n");
-    for (int i = 0; i < 5; i++)
-    {
-        if (draw_char8x16(sock, apple[i], 30 + i * 9, 20))
-        {
-            return 1;
-        }
-        Sleep(100);
-    }
-    Sleep(1800);
-    while (1)
-    {
-        cleanup(sock);
-        if (draw_str8x16(sock, apple, 30, 20, 5))
-        {
-            return 1;
-        }
-        MSG_T msg[5];
-        update_buffer_msg(msg);
-        if (__send_msg(sock, msg))
-        {
-            return 1;
-        }
-        Sleep(1800);
-    }
-    Sleep(400000);
+    draw_str8x14(sock, "APPLE", 20, 20, 5);
+    Sleep(1000000000);
     sock_delete(sock);
     return 0;
 }

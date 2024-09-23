@@ -9,7 +9,7 @@ use std::{sync::mpsc, thread, u32};
 // TcpCmdHandler 和 Listener 定义略
 
 const WIDTH: usize = 128;
-const HEIGHT: usize = 64;
+const HEIGHT: usize = 80;
 
 struct TestCmd {
     id: usize,
