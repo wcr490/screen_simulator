@@ -63,11 +63,8 @@ fn main() -> Result<(), ScreenError> {
 
     let (tx, rx) = mpsc::channel();
     let listener = screen_ser.listener;
-    screen_ser.map.window.set_target_fps(120);
+    screen_ser.map.window.set_target_fps(60);
     let mut window = screen_ser.map.window;
-
-    let mut buffer = vec![0; WIDTH * HEIGHT];
-    let mut new_buffer = vec![0; WIDTH * HEIGHT];
 
     let tcp_tx = tx.clone();
     thread::spawn(move || {
@@ -93,6 +90,8 @@ fn main() -> Result<(), ScreenError> {
             }
         }
     });
+    let mut buffer = vec![0; WIDTH * HEIGHT];
+    let mut new_buffer = vec![0; WIDTH * HEIGHT];
 
     // 初始化显示缓冲区
     for i in buffer.iter_mut() {
@@ -112,6 +111,7 @@ fn main() -> Result<(), ScreenError> {
     }
     */
     let mut update_flag = false;
+    let mut color: u32 = 0;
     while window.is_open() && !window.is_key_down(Key::Escape) {
         if let Ok(dta) = rx.try_recv() {
             if dta.len() != 0 {
@@ -121,16 +121,16 @@ fn main() -> Result<(), ScreenError> {
                 */
                 match protocol.command {
                     0 => {
-                        let pos = ((protocol.pos_y * (WIDTH as u16)) + protocol.pos_x) as usize;
+                        let pos = protocol.pos_y as usize * WIDTH + protocol.pos_x as usize;
                         if pos < new_buffer.len() {
-                            new_buffer[pos] = 0;
+                            new_buffer[pos] = color;
                             update_flag = true;
                         }
                     }
                     1 => {
-                        let pos = ((protocol.pos_y * (WIDTH as u16)) + protocol.pos_x) as usize;
+                        let pos = protocol.pos_y as usize * WIDTH + protocol.pos_x as usize;
                         if pos < new_buffer.len() {
-                            new_buffer[pos] = 0;
+                            new_buffer[pos] = color;
                         }
                     }
                     2 => {
@@ -140,16 +140,28 @@ fn main() -> Result<(), ScreenError> {
                         println!("buffer cleanup");
                         new_buffer.fill(u32::MAX);
                     }
+                    4 => {
+                        println!("buffer filled");
+                        new_buffer.fill(color);
+                    }
+                    5 => {
+                        println!("Color changes");
+                        if color != 0 {
+                            color = 0;
+                        } else {
+                            color = u32::MAX;
+                        }
+                    }
                     _ => {}
                 }
             }
         }
         if update_flag {
             window.update_with_buffer(&new_buffer, WIDTH, HEIGHT)?;
-            buffer = new_buffer.clone();
+            // buffer = new_buffer.clone();
             update_flag = false;
         } else {
-            window.update_with_buffer(&buffer, WIDTH, HEIGHT)?;
+            // window.update_with_buffer(&buffer, WIDTH, HEIGHT)?;
         }
     }
 
