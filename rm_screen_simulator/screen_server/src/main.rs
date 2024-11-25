@@ -15,6 +15,7 @@ const XOR: u32 = 1;
 const WIDTH: usize = 128;
 const HEIGHT: usize = 64;
 const INIT_BG_COLOR: u32 = BLACK;
+const INIT_FG_COLOR: u32 = WHITE;
 // const INIT_BG_COLOR: u32 = u32::MAX;
 
 struct TestCmd {
@@ -72,7 +73,7 @@ fn main() -> Result<(), ScreenError> {
 
     let (tx, rx) = mpsc::channel();
     let listener = screen_ser.listener;
-    screen_ser.map.window.set_target_fps(60);
+    screen_ser.map.window.set_target_fps(120);
     let mut window = screen_ser.map.window;
 
     let tcp_tx = tx.clone();
@@ -114,7 +115,7 @@ fn main() -> Result<(), ScreenError> {
     }
     */
     let mut update_flag = false;
-    let mut color: u32 = WHITE;
+    let mut color: u32 = INIT_FG_COLOR;
     while window.is_open() && !window.is_key_down(Key::Escape) {
         if let Ok(dta) = rx.try_recv() {
             if dta.len() != 0 {
@@ -159,7 +160,7 @@ fn main() -> Result<(), ScreenError> {
                     }
                     3 => {
                         println!("buffer cleanup");
-                        new_buffer.fill(WHITE);
+                        new_buffer.fill(INIT_BG_COLOR);
                     }
                     4 => {
                         println!("buffer filled");
@@ -167,8 +168,7 @@ fn main() -> Result<(), ScreenError> {
                             for i in new_buffer.iter_mut() {
                                 *i ^= WHITE;
                             }
-                        }
-                        else {
+                        } else {
                             new_buffer.fill(color);
                         }
                     }

@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "client.h"
+#include "egg_ui_ex/aff_mat.h"
 
 extern unsigned char ASC8X16[];
 extern unsigned char ASC8X14[];
@@ -34,6 +35,7 @@ int draw_char8x16(SOCKET s, char c, uint16_t x, uint16_t y);
 int draw_str8x16(SOCKET s, const char *str, uint16_t x, uint16_t y, uint16_t len);
 int draw_char8x14(SOCKET s, char c, uint16_t x, uint16_t y);
 int draw_str8x14(SOCKET s, const char *str, uint16_t x, uint16_t y, uint16_t len);
+int draw_affine_char8x14_buffer(SOCKET s, char c, uint16_t x, uint16_t y, mat3 *mat);
 int draw_char_arr(SOCKET s, const char *arr, uint16_t x, uint16_t y, uint16_t width, uint16_t height);
 int cleanup(SOCKET s);
 int fill(SOCKET s);

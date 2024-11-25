@@ -1,12 +1,10 @@
-#include "../systick.h"
-#include "egg_ui.h"
+#ifndef __PORT_H__
+#define __PORT_H__
 
-uint32_t SysTick_GetTick(void) {
-    return systick_get_tick_ms();
-}
-HANDLE egg_tick_init(void) {
-    HANDLE timer;
-    if (ms_timer_create(&timer, (irq_cb *)egg_tick_cb, 1))
-        return NULL;
-    return timer;
-}
+#include "../port_u8g2.h"
+#include "../systick.h"
+
+uint32_t SysTick_GetTick(void);
+HANDLE egg_tick_init(void);
+
+#endif

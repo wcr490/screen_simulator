@@ -3,8 +3,8 @@
 #include "Windows.h"
 #include "stdio.h"
 
-static uint64_t tick_counter;
-static struct timespec time_base;
+uint64_t tick_counter;
+struct timespec time_base;
 
 uint8_t systick_init() {
     if (!timespec_get(&time_base, 1)) {
@@ -34,7 +34,7 @@ uint64_t systick_get_tick_us() {
 }
 
 
-uint8_t ms_timer_create(HANDLE *timer_thread, irq_cb cb, uint32_t delay_ms) {
+uint8_t ms_timer_create(HANDLE *timer_thread, uint32_t delay_ms) {
     HANDLE thread = CreateThread(NULL, 0, TimerThread, &delay_ms, 0, NULL); 
     if (thread == NULL) {
         return 1;
@@ -60,3 +60,31 @@ int test(void) {
     printf("end: %d\n", tick_counter);
     return 0;
 }
+
+int timespec_get(struct timespec *ts, int base) {
+    if (base != TIME_UTC) {
+        return 0; // 不支持的时间基准
+    }
+
+    FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+
+    uint64_t time_ns = ((uint64_t)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
+
+    time_ns = (time_ns - 116444736000000000ULL) * 100;
+
+    ts->tv_sec = time_ns / 1000000000ULL;
+    ts->tv_nsec = time_ns % 1000000000ULL;
+
+    return base; 
+}
+
+DWORD WINAPI TimerThread(LPVOID lpParam) {
+    uint32_t delay_ms = *(uint32_t *)lpParam;
+    while (1) {
+        Sleep(delay_ms);
+        irq_callback();
+    }
+    return 0;
+}
+

@@ -7,7 +7,6 @@
 */
 
 #include "port.h"
-#include "../port_u8g2.h"
 
 #include "stdint.h"
 #define u8 uint8_t
@@ -157,6 +156,7 @@ typedef struct
 void egg_chart_init(EGG_CHART_T *obj, short x, short y, short w, short h, short r);
 void egg_draw_chart(EGG_CHART_T *obj);
 void egg_btn_onoff(EGG_SWITCH_T *obj, u8 onoff);
+void egg_chart_add_val(EGG_CHART_T *obj,short val);
 
 //-----------------------extern fun----------------------//
 void egg_ui_init(void);

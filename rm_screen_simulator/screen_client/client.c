@@ -28,7 +28,7 @@ int send_msg(SOCKET s, uint8_t *buf, int len) {
         WSACleanup();
         return 1;
     }
-    printf("Message sent!\n");
+    // printf("Message sent!\n");
     return 0;
 }
 

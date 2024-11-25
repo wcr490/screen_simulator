@@ -252,6 +252,31 @@ int draw_str8x16(SOCKET s, const char *str, uint16_t x, uint16_t y, uint16_t len
 
     return 0;
 }
+int draw_affine_char8x14_buffer(SOCKET s, char c, uint16_t x, uint16_t y, mat3 *mat)
+{
+    int index = (c - ' ') * 14;
+    vec_xy ref_xy = {x + 4, y + 7};
+    for (int i = 0; i < 14; i++)
+    {
+        for (int k = 0; k < 8; k++)
+        {
+            if (ASC8X14[index + i] & (128 >> k))
+            {
+                vec_xy xy;
+                xy[0] = x + k, xy[1] = y + i;
+                vec_xy_transformation_apply(mat, xy, ref_xy);
+                int ax = _roundf(xy[0]), ay = _roundf(xy[1]);
+                if (ax < 0 || ay < 0)
+                {
+                    continue;
+                }
+                if (draw_point_buffer(s, ax, ay))
+                    return 1;
+            }
+        }
+    }
+    return 0;
+}
 int draw_char8x14_buffer(SOCKET s, char c, uint16_t x, uint16_t y)
 {
     int index = (c - ' ') * 14;
@@ -307,6 +332,7 @@ int draw_str8x14(SOCKET s, const char *str, uint16_t x, uint16_t y, uint16_t len
     }
     return 0;
 }
+
 int draw_str8x14_buffer(SOCKET s, const char *str, uint16_t x, uint16_t y, uint16_t len)
 {
     for (int i = 0; i < len; i++)
@@ -390,7 +416,8 @@ int fill(SOCKET s)
     }
     return 0;
 }
-int change_color(SOCKET s, uint8_t color) {
+int change_color(SOCKET s, uint8_t color)
+{
     MSG_T msg[5];
     change_color_msg(msg, color);
     if (__send_msg(s, msg))

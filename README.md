@@ -7,6 +7,9 @@ cargo run
 ```bash
 gcc -g flipperzero_menu.c draw.c client.c -o client -lwsock32 -lWs2_32
 ```
+```bash
+gcc -g main.c draw.c client.c ./egg_ui_ex/aff_mat.c -o client -lwsock32 -lWs2_32
+```
 ## Run
 ```bash
 client.exe

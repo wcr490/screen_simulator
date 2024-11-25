@@ -7,21 +7,6 @@
 // Define globally
 SOCKET sock = INVALID_SOCKET;
 
-int draw_STOP()
-{
-    if (draw_str8x16(sock, "STOP", 5 * STR_WIDTH, 0, 4))
-        return 1;
-}
-int draw_SLOW_DOWN()
-{
-    if (draw_str8x16(sock, "SLOW DOWN", 3 * STR_WIDTH, 0, 9))
-        return 1;
-}
-int draw_GO()
-{
-    if (draw_str8x16(sock, "GO", 6 * STR_WIDTH, 0, 2))
-        return 1;
-}
 int main()
 {
     if (sock_init())
@@ -34,14 +19,53 @@ int main()
         printf("Failed to connect");
         return 2;
     }
-    // fill(sock);
-    draw_GO();
-    Sleep(1000);
-    change_color(sock, XOR);
-    fill(sock);
+    float sin = 0;
+    float p = 0.1;
+    float scale = 2.0f;
+    int i = 0;
     while (1)
     {
+        cleanup(sock);
+        mat3 mat;
+        /*
+        float cos = newton_sqrt((1 - sin * sin) * (float)(p > 0.0f ? 1 : -1), 3);
+        mat3_set_angle(&mat, sin, cos);
+        */
+        mat3_set_scale(&mat, scale);
+        if (draw_affine_char8x14_buffer(sock, 'E', 30, 30, &mat))
+        {
+            return 1;
+        }
+        if (draw_affine_char8x14_buffer(sock, 'G', 50, 30, &mat))
+        {
+            return 1;
+        }
+        if (draw_affine_char8x14_buffer(sock, 'G', 70, 30, &mat))
+        {
+            return 1;
+        }
+        if (update_buffer(sock))
+        {
+            return 1;
+        }
+        /*
+        sin += p;
+        if (sin >= 1.0f || sin <= -1.0f)
+            p = -p;
+        printf("sin: %f, cos: %f\n", sin, cos);
+
+        */
+        if (i % 2)
+        {
+            scale = 0.5f;
+        }
+        else
+        {
+            scale = 2.0f;
+        }
+        i++;
     }
-    
+
     sock_delete(sock);
+    return 0;
 }

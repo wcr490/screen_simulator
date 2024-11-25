@@ -1,5 +1,9 @@
 {
     "files.associations": {
-        "egg_ui.h": "c"
+        "egg_ui.h": "c",
+        "systick.h": "c",
+        "time.h": "c",
+        "port_u8g2.h": "c",
+        "port.h": "c"
     }
 }
